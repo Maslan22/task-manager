@@ -28,15 +28,11 @@ async function getData(slug: string) {
   return data;
 }
 
-interface SlugRouteProps {
-  params: {
-    slug: string;
-    name: string;
-  };
-  searchParams?: { [key: string]: string | string[] | undefined };
-}
-
-export default async function SlugRoute({ params }: SlugRouteProps) {
+export default async function SlugRoute({
+  params,
+}: {
+  params: { slug: string; name: string };
+}) {
   const data = await getData(params.slug);
 
   return (
