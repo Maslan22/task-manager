@@ -6,24 +6,6 @@ import { UserDropdown } from "../components/dashboard/UserMenu";
 import { AdminItems } from "../components/admin/AdminItems";
 import MobileNav from "../components/admin/MobileNav";
 
-export const adminNavLinks = [
-  {
-    name: "Overview",
-    href: "/admin",
-    icon: Layout,
-  },
-  {
-    name: "Users",
-    href: "/admin/users",
-    icon: Users,
-  },
-  {
-    name: "Analytics",
-    href: "/admin/analytics",
-    icon: BarChart3,
-  },
-];
-
 export default async function AdminLayout({
   children,
 }: {
@@ -74,7 +56,7 @@ export default async function AdminLayout({
         </main>
 
         {/* Mobile Navigation */}
-        <MobileNav  />
+        <MobileNav />
       </div>
     </section>
   );

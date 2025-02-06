@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { adminNavLinks } from "@/app/admin/layout";
 import { cn } from "@/lib/utils";
+import { adminNavLinks } from "./AdminNavLinks";
 
 export function AdminItems() {
   const pathname = usePathname();

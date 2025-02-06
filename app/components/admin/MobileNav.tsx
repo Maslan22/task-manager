@@ -12,7 +12,7 @@ import {
   SheetTitle,
   SheetDescription
 } from "@/components/ui/sheet";
-import { adminNavLinks } from '@/app/admin/layout';
+import { adminNavLinks } from './AdminNavLinks';
 
 
 
