@@ -13,8 +13,7 @@ import prisma from "@/app/utils/db";
 import { AttendeeList } from "@/app/components/dashboard/AttendeeList";
 
 interface PageProps {
-  params: { taskId: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  params: { taskId: string }
 }
 
 async function getTask(taskId: string) {
@@ -28,12 +27,12 @@ async function getTask(taskId: string) {
               id: true,
               name: true,
               email: true,
-              image: true,
-            },
-          },
-        },
-      },
-    },
+              image: true
+            }
+          }
+        }
+      }
+    }
   });
 }
 
@@ -41,7 +40,9 @@ export default async function AttendeesPage({ params }: PageProps) {
   const user = await auth();
   if (!user) return redirect("/login");
 
-  const task = await getTask(params.taskId);
+  const resolvedParams = await Promise.resolve(params);
+  
+  const task = await getTask(resolvedParams.taskId);
   if (!task) return redirect("/dashboard/tasks");
 
   return (

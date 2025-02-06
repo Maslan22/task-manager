@@ -2,6 +2,7 @@ import React from "react";
 import prisma from "@/app/utils/db";
 import { requireUser } from "@/app/utils/requireuser";
 import { Button } from "@/components/ui/button";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import {
   Book,
   MoreHorizontal,
@@ -27,10 +29,25 @@ import TaskList from "@/app/components/tasks/TaskList";
 import TaskGrid from "@/app/components/tasks/TaskGrid";
 import Pagination from "@/app/components/tasks/Pagination";
 
-interface PageProps {
-  params: { taskId: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
-}
+// Utility functions
+// function getStatusColor(status: string) {
+//   switch (status) {
+//     case "PENDING":
+//       return "bg-gray-500/10 text-gray-500";
+//     case "UPCOMING":
+//       return "bg-blue-500/10 text-blue-500";
+//     case "ONGOING":
+//       return "bg-yellow-500/10 text-yellow-500";
+//     case "COMPLETED":
+//       return "bg-green-500/10 text-green-500";
+//     default:
+//       return "bg-gray-500/10 text-gray-500";
+//   }
+// }
+
+// function formatStatus(status: string) {
+//   return status.charAt(0) + status.slice(1).toLowerCase();
+// }
 
 async function getData(
   userId: string,
@@ -39,14 +56,15 @@ async function getData(
   search: string = "",
   limit: number = 10
 ) {
+  // Calculate skip value
   const skipValue = (page - 1) * limit;
 
   const task = await prisma.task.findFirst({
     where: {
       id: taskId,
       OR: [
-        { userId: userId },
-        { attendees: { some: { userId: userId } } },
+        { userId: userId }, // Task owner
+        { attendees: { some: { userId: userId } } }, // Attendee
       ],
     },
     select: {
@@ -126,16 +144,41 @@ async function getData(
   };
 }
 
+interface PageProps {
+  params: { taskId: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+}
+
 export default async function TaskIdRoute({ params, searchParams }: PageProps) {
   const user = await requireUser();
+  async function getParams() {
+    const user = await requireUser();
+    const resolvedParams = await Promise.resolve(params);
+    const resolvedSearch = await Promise.resolve(searchParams);
+
+    const task = await prisma.task.findFirst({
+      where: {
+        id: resolvedParams.taskId,
+      },
+      select: {
+        userId: true,
+      },
+    });
+
+    return {
+      taskId: resolvedParams.taskId,
+      page: parseInt(String(resolvedSearch?.page || "1")),
+      search: String(resolvedSearch?.search || ""),
+      view: String(resolvedSearch?.view || "list") as "grid" | "list",
+      isOwner: task?.userId === user.user.id,
+    };
+  }
+
+  const { taskId, page, search, view, isOwner } = await getParams();
+
   if (!user) {
     return redirect("/login");
   }
-
-  const taskId = params.taskId;
-  const page = parseInt(String(searchParams?.page || "1"));
-  const search = String(searchParams?.search || "");
-  const view = String(searchParams?.view || "list") as "grid" | "list";
 
   const { data, total, task } = await getData(
     user.user.id,
@@ -145,9 +188,15 @@ export default async function TaskIdRoute({ params, searchParams }: PageProps) {
   );
   const totalPages = Math.ceil(total / 10);
 
+  // const getDisplayView = () => {
+  //   return typeof window !== "undefined" && window.innerWidth <= 630
+  //     ? "grid"
+  //     : view;
+  // };
+
   return (
     <div className="container mx-auto p-4 space-y-6">
-      {/* Top Actions Bar */}
+      {/* Top Actions Bar - Stack on mobile, row on larger screens */}
       <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:justify-between md:items-center">
         {/* Search and Mobile Menu */}
         <div className="flex flex-col space-y-3 sm:space-y-0 sm:space-x-3 sm:flex-row sm:items-center">
@@ -176,7 +225,7 @@ export default async function TaskIdRoute({ params, searchParams }: PageProps) {
                     View Task
                   </Link>
                 </DropdownMenuItem>
-                {task.userId === user.user.id && (
+                {isOwner && (
                   <>
                     <DropdownMenuItem asChild>
                       <Link
@@ -244,7 +293,7 @@ export default async function TaskIdRoute({ params, searchParams }: PageProps) {
               View Task
             </Link>
           </Button>
-          {task.userId === user.user.id && (
+          {isOwner && (
             <>
               <Button className="w-full md:w-auto" variant="secondary" asChild>
                 <Link href={`/dashboard/tasks/${taskId}/attendees`}>
@@ -274,19 +323,19 @@ export default async function TaskIdRoute({ params, searchParams }: PageProps) {
       {/* Content Section */}
       <div className="w-full">
         {data.length === 0 ? (
-          <NoTasks search={search} isOwner={task.userId === user.user.id} taskId={taskId} />
+          <NoTasks search={search} isOwner={isOwner} taskId={taskId} />
         ) : (
           <div className="space-y-6">
             {/* Mobile View - Always Grid */}
             <div className="block sm:hidden">
-              <TaskGrid data={data} isOwner={task.userId === user.user.id} taskId={taskId} />
+              <TaskGrid data={data} isOwner={isOwner} taskId={taskId} />
             </div>
             {/* Desktop View - Respects User Choice */}
             <div className="hidden sm:block">
               {view === "list" ? (
-                <TaskList data={data} isOwner={task.userId === user.user.id} taskId={taskId} />
+                <TaskList data={data} isOwner={isOwner} taskId={taskId} />
               ) : (
-                <TaskGrid data={data} isOwner={task.userId === user.user.id} taskId={taskId} />
+                <TaskGrid data={data} isOwner={isOwner} taskId={taskId} />
               )}
             </div>
             {data.length > 0 && (
