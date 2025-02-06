@@ -60,7 +60,7 @@ export default function ForgotPasswordPage() {
     }
   };
 
-   return (
+  return (
     <div className="container relative min-h-screen flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-1 lg:px-0">
       <div className="lg:p-8">
         <Card className="mx-auto max-w-sm">
@@ -74,7 +74,6 @@ export default function ForgotPasswordPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -83,7 +82,9 @@ export default function ForgotPasswordPage() {
                   placeholder="name@example.com"
                   {...register("email")}
                 />
-               
+                {errors.email && (
+                  <p className="text-sm text-red-500">{errors.email.message}</p>
+                )}
               </div>
               <SubmitButton
                 text="Send Reset Link"
