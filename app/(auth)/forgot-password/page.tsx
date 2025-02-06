@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -99,7 +98,7 @@ export default function ForgotPasswordPage() {
                   <p className="text-sm text-red-500">{errors.email.message}</p>
                 )}
               </div>
-              <SubmitButton text="Send Reset Link"  loading={loading}/>
+              <SubmitButton text="Send Reset Link"  loading={loading} className="w-full"/>
             </form>
             <div className="mt-4 text-center text-sm">
               <Link href="/login" className="underline hover:text-primary">

@@ -31,7 +31,7 @@ interface iAppProps {
     title: string;
     slug: string;
     smallDescription: string;
-    articleContent: any;
+    articleContent: JSON;
     id: string;
     image: string;
   };
@@ -165,7 +165,7 @@ export function EditArticleForm({ data, taskId }: iAppProps) {
           </div>
 
           <div className="grid gap-2">
-            <Label>Article Content</Label>
+            <Label>Task Content</Label>
             <input
               type="hidden"
               key={fields.articleContent.key}
@@ -179,7 +179,7 @@ export function EditArticleForm({ data, taskId }: iAppProps) {
             </p>
           </div>
 
-          <SubmitButton text="Edit Article" />
+          <SubmitButton text="Edit Task" />
         </form>
       </CardContent>
     </Card>

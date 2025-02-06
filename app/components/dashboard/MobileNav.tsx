@@ -26,7 +26,7 @@ const navLinks = [
   },
 ];
 
-export const MobileNav = ({ username }: any) => {
+export const MobileNav = () => {
   const pathname = usePathname();
 
   return (

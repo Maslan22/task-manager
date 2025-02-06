@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CircleUser, Users, BarChart3, Settings, Layout } from "lucide-react";
+import { Users, BarChart3, Layout } from "lucide-react";
 import { auth } from "../utils/auth";
 import { ThemeToggle } from "../components/dashboard/ThemeToggle";
 import { UserDropdown } from "../components/dashboard/UserMenu";
@@ -74,7 +74,7 @@ export default async function AdminLayout({
         </main>
 
         {/* Mobile Navigation */}
-        <MobileNav username={username} isAdmin={true} />
+        <MobileNav  />
       </div>
     </section>
   );

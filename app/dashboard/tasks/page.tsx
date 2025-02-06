@@ -57,10 +57,10 @@ export default async function TasksRoute() {
             <FileIcon className="size-10 text-primary" />
           </div>
           <h2 className="mt-6 text-xl font-semibold">
-            You don't have any Task created
+            You dont have any Task created
           </h2>
           <p className="mb-8 mt-2 text-center text-sm leading-tight text-muted-foreground max-w-sm mx-auto">
-            You don't have any Task. Please create some to view them!
+            You dont have any Task. Please create some to view them!
           </p>
 
           <Button asChild>

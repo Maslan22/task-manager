@@ -1,6 +1,5 @@
 
-import { redirect } from "next/navigation";
-import { requireUser } from "./utils/requireuser";
+
 import { Hero } from "./frontend/Hero";
 import { Features } from "./frontend/Features";
 import { Logos } from "./frontend/logos";

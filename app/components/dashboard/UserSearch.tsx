@@ -11,23 +11,37 @@ import { useRouter } from "next/navigation";
 import { AttendeeList } from "./AttendeeList";
 import { toast } from "sonner";
 
-interface SearchUser {
+interface User {
   id: string;
   name: string | null;
   email: string | null;
   image: string | null;
+  emailVerified?: Date | null;
+  password?: string;
+  verificationToken?: string | null;
+  resetToken?: string | null;
+  resetTokenExpiry?: Date | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+interface TaskAttendee {
+  id: string;
+  userId: string;
+  taskId: string;
+  user: User;
 }
 
 interface UserSearchProps {
   taskId: string;
-  attendees: any[]; // Use your actual attendee type here
+  attendees: TaskAttendee[];
 }
 
 export function UserSearch({ taskId, attendees }: UserSearchProps) {
   const [open, setOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [users, setUsers] = useState<SearchUser[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -55,7 +69,7 @@ export function UserSearch({ taskId, attendees }: UserSearchProps) {
     setLoading(true);
     try {
       const result = await addAttendee(formData);
-      
+  
       if (result?.error) {
         toast.error(result.error);
         return;
@@ -66,6 +80,10 @@ export function UserSearch({ taskId, attendees }: UserSearchProps) {
       setOpen(false);
       setSearchTerm("");
       setUsers([]);
+  
+      if (result?.success && result.taskId) {
+        router.push(`/dashboard/tasks/${result.taskId}/attendees`);
+      }
     } catch (error) {
       console.error("Failed to add attendee:", error);
       toast.error("Failed to add attendee");

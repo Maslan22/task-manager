@@ -1,7 +1,6 @@
 import prisma from "@/app/utils/db";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import Logo from "@/public/logo.svg";
 import { ThemeToggle } from "@/app/components/dashboard/ThemeToggle";
 import {
   Card,
@@ -13,6 +12,7 @@ import {
 import Defaultimage from "@/public/default.png";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 async function getData(subDir: string) {
   // Decode the URL-encoded subdirectory
@@ -60,6 +60,15 @@ export default async function BlogIndexPage({
 
   return (
     <>
+      <div className="flex items-center gap-x-3 pt-10 pb-5">
+        <Button size="icon" variant="outline" asChild>
+          <Link href={`/dashboard/tasks`}>
+            <ArrowLeft className="size-4" />
+          </Link>
+        </Button>
+        <h1 className="text-xl font-medium">Go Back</h1>
+      </div>
+
       <nav className="grid grid-cols-3 my-10">
         <div className="col-span-1" />
         <div className="flex items-center justify-center">

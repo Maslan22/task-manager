@@ -14,11 +14,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { SubmitButton } from "@/app/components/SubmitButtons";
-// import { SubmitButton } from "@/app/components/dashboard/SubmitButtons";
 
 const resetPasswordSchema = z
   .object({
@@ -129,7 +127,7 @@ export default function ResetPasswordPage() {
                   </p>
                 )}
               </div>
-              <SubmitButton text="Reset Password" loading={loading} />
+              <SubmitButton text="Reset Password" loading={loading}  className="w-full"/>
             </form>
           </CardContent>
         </Card>

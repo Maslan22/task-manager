@@ -12,8 +12,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { registerUser } from "@/app/actions";
@@ -183,7 +181,7 @@ export default function RegisterPage() {
                 <p className="text-sm text-red-500">{errors.terms.message}</p>
               )} */}
 
-              <SubmitButton text="Create account" loading={loading}/>
+              <SubmitButton text="Create account" loading={loading} className="w-full"/>
             </form>
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}

@@ -1,6 +1,4 @@
-import Image from "next/image";
 import Link from "next/link";
-import Logo from "@/public/logo.svg";
 import { Button } from "@/components/ui/button";
 // import HeroImage from "@/public/hero.png";
 import { ThemeToggle } from "../components/dashboard/ThemeToggle";

@@ -1,16 +1,8 @@
 import React from "react";
 import prisma from "@/app/utils/db";
 import { requireUser } from "@/app/utils/requireuser";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,18 +11,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
+
 import {
   Book,
-  FileIcon,
   MoreHorizontal,
   PlusCircle,
   Settings,
@@ -39,10 +22,8 @@ import {
   Search,
   Users,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { UpdatePostStatus } from "@/app/actions";
 import { SearchInput } from "@/app/components/dashboard/SearchInput";
 import NoTasks from "@/app/components/tasks/NoTasks";
 import TaskList from "@/app/components/tasks/TaskList";
@@ -50,24 +31,24 @@ import TaskGrid from "@/app/components/tasks/TaskGrid";
 import Pagination from "@/app/components/tasks/Pagination";
 
 // Utility functions
-function getStatusColor(status: string) {
-  switch (status) {
-    case "PENDING":
-      return "bg-gray-500/10 text-gray-500";
-    case "UPCOMING":
-      return "bg-blue-500/10 text-blue-500";
-    case "ONGOING":
-      return "bg-yellow-500/10 text-yellow-500";
-    case "COMPLETED":
-      return "bg-green-500/10 text-green-500";
-    default:
-      return "bg-gray-500/10 text-gray-500";
-  }
-}
+// function getStatusColor(status: string) {
+//   switch (status) {
+//     case "PENDING":
+//       return "bg-gray-500/10 text-gray-500";
+//     case "UPCOMING":
+//       return "bg-blue-500/10 text-blue-500";
+//     case "ONGOING":
+//       return "bg-yellow-500/10 text-yellow-500";
+//     case "COMPLETED":
+//       return "bg-green-500/10 text-green-500";
+//     default:
+//       return "bg-gray-500/10 text-gray-500";
+//   }
+// }
 
-function formatStatus(status: string) {
-  return status.charAt(0) + status.slice(1).toLowerCase();
-}
+// function formatStatus(status: string) {
+//   return status.charAt(0) + status.slice(1).toLowerCase();
+// }
 
 async function getData(
   userId: string,
@@ -208,11 +189,11 @@ export default async function TaskIdRoute({ params, searchParams }: PageProps) {
   );
   const totalPages = Math.ceil(total / 10);
 
-  const getDisplayView = () => {
-    return typeof window !== "undefined" && window.innerWidth <= 630
-      ? "grid"
-      : view;
-  };
+  // const getDisplayView = () => {
+  //   return typeof window !== "undefined" && window.innerWidth <= 630
+  //     ? "grid"
+  //     : view;
+  // };
 
   return (
     <div className="container mx-auto p-4 space-y-6">

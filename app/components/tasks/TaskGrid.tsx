@@ -21,8 +21,17 @@ import {
 import { MoreHorizontal } from "lucide-react";
 import { UpdatePostStatus } from "@/app/actions";
 
+interface TaskItem {
+  id: string;
+  image: string;
+  title: string;
+  smallDescription: string;
+  createdAt: Date; // Updated to Date type
+  status: string;
+}
+
 interface TaskGridProps {
-  data: any[];
+  data: TaskItem[]; // Updated to use TaskItem[]
   isOwner: boolean;
   taskId: string;
 }

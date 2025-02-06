@@ -3,7 +3,6 @@
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback } from "react";
 import { useDebouncedCallback } from 'use-debounce';
 
 export function SearchInput({ defaultValue = '' }: { defaultValue?: string }) {

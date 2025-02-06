@@ -13,13 +13,13 @@ type User = {
   name: string | null;
   email: string | null;
   image: string | null;
-  emailVerified: Date | null;
-  password: string;
-  verificationToken: string | null;
-  resetToken: string | null;
-  resetTokenExpiry: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
+  emailVerified?: Date | null;
+  password?: string;
+  verificationToken?: string | null;
+  resetToken?: string | null;
+  resetTokenExpiry?: Date | null;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 type Attendee = {

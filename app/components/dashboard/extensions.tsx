@@ -11,15 +11,14 @@ import {
   
   // TODO I am using cx here to get tailwind autocomplete working, idk if someone else can write a regex to just capture the class key in objects
   
-  // You can overwrite the placeholder with your own configuration
   const placeholder = Placeholder;
-  const tiptapLink = TiptapLink.configure({
-    HTMLAttributes: {
-      class: cx(
-        "text-muted-foreground underline underline-offset-[3px] hover:text-primary transition-colors cursor-pointer",
-      ),
-    },
-  });
+  // const tiptapLink = TiptapLink.configure({
+  //   HTMLAttributes: {
+  //     class: cx(
+  //       "text-muted-foreground underline underline-offset-[3px] hover:text-primary transition-colors cursor-pointer",
+  //     ),
+  //   },
+  // });
   
   const taskList = TaskList.configure({
     HTMLAttributes: {

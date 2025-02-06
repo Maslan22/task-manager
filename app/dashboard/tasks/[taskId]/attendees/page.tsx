@@ -42,7 +42,7 @@ export default async function AttendeesPage({ params }: PageProps) {
 
   const resolvedParams = await Promise.resolve(params);
   
-  const task: any = await getTask(resolvedParams.taskId);
+  const task = await getTask(resolvedParams.taskId);
   if (!task) return redirect("/dashboard/tasks");
 
   return (

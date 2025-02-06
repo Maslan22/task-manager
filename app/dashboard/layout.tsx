@@ -1,15 +1,7 @@
 import Link from "next/link";
-import Logo from "@/public/logo.svg";
-import Image from "next/image";
-import { CircleUser, DollarSign, Globe, Home } from "lucide-react";
+import {  Globe, Home } from "lucide-react";
 import { ThemeToggle } from "../components/dashboard/ThemeToggle";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+
 import { DashboardItems } from "../components/dashboard/DashboardItems";
 import { auth } from "../utils/auth";
 import { UserDropdown } from "../components/dashboard/UserMenu";
@@ -82,7 +74,7 @@ export default async function DashboardLayout({
         </main>
 
         {/* Mobile Navigation */}
-        <MobileNav username={username} />
+        <MobileNav  />
       </div>
     </section>
   );

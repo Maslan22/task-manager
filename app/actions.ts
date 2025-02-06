@@ -5,7 +5,7 @@ import prisma from "./utils/db";
 import { requireUser } from "./utils/requireuser";
 import { parseWithZod } from "@conform-to/zod";
 import { redirect } from "next/navigation";
-import { PostSchema, TaskCreationSchema, taskSchema } from "./utils/zodSchemas";
+import { PostSchema, taskSchema } from "./utils/zodSchemas";
 
 import { Resend } from "resend";
 import { generateToken } from "./utils/tokengen";
@@ -38,7 +38,7 @@ export async function registerUser({
   const hashedPassword = await bcrypt.hash(password, 12);
 
   // Create user with verification token
-  const user = await prisma.user.create({
+  await prisma.user.create({
     data: {
       email,
       password: hashedPassword,
@@ -106,7 +106,7 @@ export async function CreateSiteAction(prevState: any, formData: FormData) {
     return submission.reply();
   }
 
-  const response = await prisma.task.create({
+  await prisma.task.create({
     data: {
       description: submission.value.description,
       name: submission.value.name,
@@ -129,7 +129,7 @@ export async function CreatePostAction(prevState: any, formData: FormData) {
     return submission.reply();
   }
 
-  const data = await prisma.post.create({
+  await prisma.post.create({
     data: {
       title: submission.value.title,
       smallDescription: submission.value.smallDescription,
@@ -155,7 +155,7 @@ export async function UpdatePostStatus(formData: FormData) {
     | "ONGOING"
     | "COMPLETED";
 
-  const data = await prisma.post.update({
+  await prisma.post.update({
     where: {
       userId: user.user.id,
       id: formData.get("articleId") as string,
@@ -179,7 +179,7 @@ export async function EditPostAction(prevState: any, formData: FormData) {
     return submission.reply();
   }
 
-  const data = await prisma.post.update({
+  await prisma.post.update({
     where: {
       userId: user.user.id,
       id: formData.get("articleId") as string,
@@ -199,7 +199,7 @@ export async function EditPostAction(prevState: any, formData: FormData) {
 export async function DeletePost(formData: FormData) {
   const user = await requireUser();
 
-  const data = await prisma.post.delete({
+ await prisma.post.delete({
     where: {
       userId: user.user.id,
       id: formData.get("articleId") as string,
@@ -212,7 +212,7 @@ export async function DeletePost(formData: FormData) {
 export async function UpdateImage(formData: FormData) {
   const user = await requireUser();
 
-  const data = await prisma.task.update({
+  await prisma.task.update({
     where: {
       userId: user.user.id,
       id: formData.get("taskId") as string,
@@ -228,7 +228,7 @@ export async function UpdateImage(formData: FormData) {
 export async function DeleteTask(formData: FormData) {
   const user = await requireUser();
 
-  const data = await prisma.task.delete({
+  await prisma.task.delete({
     where: {
       userId: user.user.id,
       id: formData.get("taskId") as string,
@@ -268,7 +268,6 @@ export async function addAttendee(formData: FormData) {
   const email = formData.get("email") as string;
   const taskId = formData.get("taskId") as string;
 
-  // Check if user already exists
   const attendeeUser = await prisma.user.findUnique({
     where: { email },
   });
@@ -277,7 +276,6 @@ export async function addAttendee(formData: FormData) {
     return { error: "User not found" };
   }
 
-  // Check if already an attendee
   const existingAttendee = await prisma.taskAttendee.findFirst({
     where: {
       taskId,
@@ -296,7 +294,7 @@ export async function addAttendee(formData: FormData) {
     },
   });
 
-  redirect(`/dashboard/tasks/${taskId}/attendees`);
+  return { success: true, taskId };
 }
 
 export async function removeAttendee(formData: FormData) {

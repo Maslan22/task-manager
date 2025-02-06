@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   Card,
@@ -30,19 +30,26 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-interface Attendee {
-  user: {
-    name: string;
-    email: string;
-  };
+interface UserInfo {
+  name: string | null;
+  email: string | null;
+}
+
+interface TaskAttendee {
+  id: string;
+  createdAt: Date;
+  userId: string;
+  taskId: string;
+  user: UserInfo;
 }
 
 interface Task {
   id: string;
   name: string;
   description: string;
-  imageUrl: string;
-  attendees: Attendee[];
+  imageUrl: string | null;
+  userId: string | null;
+  attendees: TaskAttendee[];
 }
 
 interface Article {
@@ -50,21 +57,27 @@ interface Article {
   title: string;
   smallDescription: string;
   image: string;
-  taskId: string;
+  taskId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  userId: string | null;
+  articleContent: any; // JsonValue
+  slug: string;
+  status: string; // PostStatus
 }
 
 interface DashboardContentProps {
-  tasks:any;
-  articles: any;
+  tasks: Task[];
+  articles: Article[];
 }
 
 interface AttendeesBadgeProps {
-  attendees: Attendee[];
+  attendees: TaskAttendee[];
 }
 
 const AttendeesBadge = ({ attendees }: AttendeesBadgeProps) => {
   if (!attendees?.length) return null;
-  
+
   return (
     <TooltipProvider>
       <Tooltip>
@@ -76,8 +89,8 @@ const AttendeesBadge = ({ attendees }: AttendeesBadgeProps) => {
         </TooltipTrigger>
         <TooltipContent>
           <div className="space-y-1">
-            {attendees.map((attendee: Attendee, index: number) => (
-              <div key={index}>{attendee.user.name}</div>
+            {attendees.map((attendee) => (
+              <div key={attendee.id}>{attendee.user.name}</div>
             ))}
           </div>
         </TooltipContent>
@@ -87,18 +100,26 @@ const AttendeesBadge = ({ attendees }: AttendeesBadgeProps) => {
 };
 
 export function DashboardContent({ tasks, articles }: DashboardContentProps) {
-  const [view, setView] = useState('grid');
-  const [search, setSearch] = useState('');
+  const [view, setView] = useState<"grid" | "list">("grid");
+  const [search, setSearch] = useState("");
 
-  const filteredTasks = tasks.filter((task: Task) => 
-    task.name.toLowerCase().includes(search.toLowerCase()) ||
-    task.description.toLowerCase().includes(search.toLowerCase())
+  const filteredTasks = tasks.filter(
+    (task: Task) =>
+      task.name.toLowerCase().includes(search.toLowerCase()) ||
+      task.description.toLowerCase().includes(search.toLowerCase())
   );
 
-  const filteredArticles = articles.filter((article: Article) => 
-    article.title.toLowerCase().includes(search.toLowerCase()) ||
-    article.smallDescription.toLowerCase().includes(search.toLowerCase())
+  const filteredArticles = articles.filter(
+    (article: Article) =>
+      article.title.toLowerCase().includes(search.toLowerCase()) ||
+      article.smallDescription.toLowerCase().includes(search.toLowerCase())
   );
+
+  const renderTaskLink = (taskId: string) =>
+    taskId ? `/dashboard/tasks/${taskId}` : "/dashboard/tasks";
+
+  const renderArticleLink = (taskId: string | null, articleId: string) =>
+    taskId ? `/dashboard/tasks/${taskId}/${articleId}` : "/dashboard/tasks";
 
   return (
     <div>
@@ -114,16 +135,16 @@ export function DashboardContent({ tasks, articles }: DashboardContentProps) {
         </div>
         <div className="flex gap-2 border rounded-md">
           <Button
-            variant={view === 'grid' ? 'default' : 'ghost'}
+            variant={view === "grid" ? "default" : "ghost"}
             size="sm"
-            onClick={() => setView('grid')}
+            onClick={() => setView("grid")}
           >
             <GridIcon className="h-4 w-4" />
           </Button>
           <Button
-            variant={view === 'list' ? 'default' : 'ghost'}
+            variant={view === "list" ? "default" : "ghost"}
             size="sm"
-            onClick={() => setView('list')}
+            onClick={() => setView("list")}
           >
             <ListIcon className="h-4 w-4" />
           </Button>
@@ -134,13 +155,17 @@ export function DashboardContent({ tasks, articles }: DashboardContentProps) {
       {filteredTasks.length === 0 ? (
         <EmptyState
           title="No tasks found"
-          description={search ? "No tasks match your search criteria." : "You currently dont have any Tasks. Please create some so that you can see them right here."}
+          description={
+            search
+              ? "No tasks match your search criteria."
+              : "You currently don't have any Tasks. Please create some so that you can see them right here."
+          }
           href="/dashboard/tasks/new"
           buttonText="Create Task"
         />
-      ) : view === 'grid' ? (
+      ) : view === "grid" ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-7">
-          {filteredTasks.map((item: Task) => (
+          {filteredTasks.map((item) => (
             <Card key={item.id}>
               <Image
                 src={item.imageUrl ?? Defaultimage}
@@ -158,12 +183,9 @@ export function DashboardContent({ tasks, articles }: DashboardContentProps) {
                   {item.description}
                 </CardDescription>
               </CardHeader>
-
               <CardFooter>
                 <Button asChild className="w-full">
-                  <Link href={`/dashboard/tasks/${item.id}`}>
-                    View Task
-                  </Link>
+                  <Link href={renderTaskLink(item.id)}>View Task</Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -177,7 +199,9 @@ export function DashboardContent({ tasks, articles }: DashboardContentProps) {
                 <TableRow>
                   <TableHead className="w-[100px]">Image</TableHead>
                   <TableHead>Task Name</TableHead>
-                  <TableHead className="hidden md:table-cell">Description</TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    Description
+                  </TableHead>
                   <TableHead className="w-[100px]">Attendees</TableHead>
                   <TableHead className="w-[100px]">Action</TableHead>
                 </TableRow>
@@ -218,13 +242,17 @@ export function DashboardContent({ tasks, articles }: DashboardContentProps) {
       {filteredArticles.length === 0 ? (
         <EmptyState
           title="No articles found"
-          description={search ? "No articles match your search criteria." : "Your currently dont have any articles created. Please create some so that you can see them right here"}
+          description={
+            search
+              ? "No articles match your search criteria."
+              : "You currently don't have any articles created. Please create some so that you can see them right here"
+          }
           buttonText="Create Task"
           href="/dashboard/tasks"
         />
-      ) : view === 'grid' ? (
+      ) : view === "grid" ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-7">
-          {filteredArticles.map((item: Article) => (
+          {filteredArticles.map((item) => (
             <Card key={item.id}>
               <Image
                 src={item.image ?? Defaultimage}
@@ -239,10 +267,9 @@ export function DashboardContent({ tasks, articles }: DashboardContentProps) {
                   {item.smallDescription}
                 </CardDescription>
               </CardHeader>
-
               <CardFooter>
                 <Button asChild className="w-full">
-                  <Link href={`/dashboard/tasks/${item.taskId}/${item.id}`}>
+                  <Link href={renderArticleLink(item.taskId, item.id)}>
                     Edit Article
                   </Link>
                 </Button>
@@ -258,7 +285,9 @@ export function DashboardContent({ tasks, articles }: DashboardContentProps) {
                 <TableRow>
                   <TableHead className="w-[100px]">Image</TableHead>
                   <TableHead>Title</TableHead>
-                  <TableHead className="hidden md:table-cell">Description</TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    Description
+                  </TableHead>
                   <TableHead className="w-[100px]">Action</TableHead>
                 </TableRow>
               </TableHeader>
@@ -276,11 +305,17 @@ export function DashboardContent({ tasks, articles }: DashboardContentProps) {
                     </TableCell>
                     <TableCell className="font-medium">{item.title}</TableCell>
                     <TableCell className="hidden md:table-cell">
-                      <span className="line-clamp-2">{item.smallDescription}</span>
+                      <span className="line-clamp-2">
+                        {item.smallDescription}
+                      </span>
                     </TableCell>
                     <TableCell>
                       <Button asChild size="sm">
-                        <Link href={`/dashboard/tasks/${item.taskId}/${item.id}`}>Edit</Link>
+                        <Link
+                          href={`/dashboard/tasks/${item.taskId}/${item.id}`}
+                        >
+                          Edit
+                        </Link>
                       </Button>
                     </TableCell>
                   </TableRow>

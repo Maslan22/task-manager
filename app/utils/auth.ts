@@ -1,5 +1,10 @@
 // app/utils/auth.ts
 import { DefaultSession } from "next-auth";
+import NextAuth from "next-auth";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import prisma from "./db";
 
 declare module "next-auth" {
   interface Session {
@@ -14,17 +19,19 @@ declare module "next-auth" {
   }
 }
 
-import NextAuth from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
-import prisma from "./db";
+interface AuthUser {
+  id: string;
+  email: string;
+  name: string | null;
+  image: string | null;
+  role: "USER" | "ADMIN";
+}
 
 export const {
   handlers: { GET, POST },
   auth,
   signIn,
-  signOut
+  signOut,
 } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
@@ -36,17 +43,17 @@ export const {
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
-      async authorize(credentials): Promise<any> {
+      async authorize(credentials): Promise<AuthUser | null> {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Missing credentials");
         }
 
         const user = await prisma.user.findUnique({
           where: {
-            email: credentials.email
-          }
+            email: credentials.email,
+          },
         });
 
         if (!user || !user.password) {
@@ -69,8 +76,8 @@ export const {
           image: user.image,
           role: user.role,
         };
-      }
-    })
+      },
+    }),
   ],
   callbacks: {
     async jwt({ token, user }) {
@@ -88,6 +95,6 @@ export const {
         session.user.role = token.role as "USER" | "ADMIN";
       }
       return session;
-    }
-  }
+    },
+  },
 });

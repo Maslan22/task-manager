@@ -14,7 +14,6 @@ import Link from "next/link";
 import { toast } from "sonner";
 
 export default function VerifyEmailPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const [status, setStatus] = useState<"verifying" | "success" | "error">(

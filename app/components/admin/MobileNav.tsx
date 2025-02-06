@@ -14,12 +14,9 @@ import {
 } from "@/components/ui/sheet";
 import { adminNavLinks } from '@/app/admin/layout';
 
-interface MobileNavProps {
-  username: any;
-  isAdmin?: boolean;
-}
 
-export const MobileNav = ({ username, isAdmin }: MobileNavProps) => {
+
+export const MobileNav = () => {
   const pathname = usePathname();
   const navItems = adminNavLinks.slice(0, 2); // Only show first 2 items in bottom nav
 

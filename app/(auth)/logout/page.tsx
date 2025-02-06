@@ -1,6 +1,5 @@
 import { SubmitButton } from "@/app/components/SubmitButtons"
 import { auth, signOut } from "@/app/utils/auth"
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -34,7 +33,7 @@ export default async function LogoutPage() {
                 await signOut()
               }}
             >
-              <SubmitButton text="Sign Out" variant={"destructive"}/>
+              <SubmitButton text="Sign Out" variant={"destructive"} className="w-full"/>
             </form>
           </CardContent>
         </Card>

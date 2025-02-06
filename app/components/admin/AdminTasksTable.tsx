@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -9,14 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { MoreHorizontal } from "lucide-react";
+
 import { formatDistance } from "date-fns";
 
 interface Task {
@@ -54,14 +46,24 @@ export function AdminTasksTable({ data }: AdminTasksTableProps) {
           <TableBody>
             {data.map((task) => (
               <TableRow key={task.id}>
-                <TableCell className="font-medium whitespace-nowrap">{task.name}</TableCell>
-                <TableCell className="whitespace-nowrap">{task.User?.name || "No creator"}</TableCell>
-                <TableCell className="whitespace-nowrap">{task.subdirectory}</TableCell>
-                <TableCell className="whitespace-nowrap">{task.attendees.length}</TableCell>
-                <TableCell className="whitespace-nowrap">{task.posts.length}</TableCell>
+                <TableCell className="font-medium whitespace-nowrap">
+                  {task.name}
+                </TableCell>
                 <TableCell className="whitespace-nowrap">
-                  {formatDistance(new Date(task.createdAt), new Date(), { 
-                    addSuffix: true 
+                  {task.User?.name || "No creator"}
+                </TableCell>
+                <TableCell className="whitespace-nowrap">
+                  {task.subdirectory}
+                </TableCell>
+                <TableCell className="whitespace-nowrap">
+                  {task.attendees.length}
+                </TableCell>
+                <TableCell className="whitespace-nowrap">
+                  {task.posts.length}
+                </TableCell>
+                <TableCell className="whitespace-nowrap">
+                  {formatDistance(new Date(task.createdAt), new Date(), {
+                    addSuffix: true,
                   })}
                 </TableCell>
                 {/* <TableCell>

@@ -1,7 +1,6 @@
 "use client";
 import { CreateSiteAction } from "@/app/actions";
 import { taskSchema } from "@/app/utils/zodSchemas";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -16,8 +15,6 @@ import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { Label } from "@/components/ui/label";
 import { useActionState } from "react";
-import { toast } from "sonner";
-import { useFormState } from "react-dom";
 import { SubmitButton } from "@/app/components/dashboard/SubmitButtons";
 
 export default function NewTaskRoute() {
@@ -39,7 +36,7 @@ export default function NewTaskRoute() {
         <CardHeader>
           <CardTitle>Create Task</CardTitle>
           <CardDescription>
-            Create your task here. Once you're finished, click the button
+            Create your task here. Once you finished, click the button
             below...
           </CardDescription>
         </CardHeader>
