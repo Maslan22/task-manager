@@ -30,6 +30,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import { Prisma } from "@prisma/client";
+import type { PostStatus } from "@prisma/client";
+
 interface UserInfo {
   name: string | null;
   email: string | null;
@@ -49,6 +52,8 @@ interface Task {
   description: string;
   imageUrl: string | null;
   userId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
   attendees: TaskAttendee[];
 }
 
@@ -61,9 +66,9 @@ interface Article {
   createdAt: Date;
   updatedAt: Date;
   userId: string | null;
-  articleContent: any; // JsonValue
+  articleContent: Prisma.JsonValue;
   slug: string;
-  status: string; // PostStatus
+  status: PostStatus;
 }
 
 interface DashboardContentProps {

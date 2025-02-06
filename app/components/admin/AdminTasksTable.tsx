@@ -8,8 +8,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
 import { formatDistance } from "date-fns";
+
+interface Post {
+  id: string;
+  title: string;
+  image: string;
+  articleContent: unknown;
+  smallDescription: string;
+  slug: string;
+  taskId: string | null;
+}
+
+interface TaskAttendee {
+  id: string;
+  userId: string;
+  taskId: string;
+}
 
 interface Task {
   id: string;
@@ -19,8 +34,8 @@ interface Task {
   User: {
     name: string | null;
   } | null;
-  attendees: any[];
-  posts: any[];
+  attendees: TaskAttendee[];
+  posts: Post[];
 }
 
 interface AdminTasksTableProps {
@@ -66,22 +81,6 @@ export function AdminTasksTable({ data }: AdminTasksTableProps) {
                     addSuffix: true,
                   })}
                 </TableCell>
-                {/* <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>View details</DropdownMenuItem>
-                      <DropdownMenuItem>Edit task</DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600">
-                        Delete task
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell> */}
               </TableRow>
             ))}
           </TableBody>

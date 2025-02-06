@@ -27,7 +27,6 @@ type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
-  const [message, setMessage] = useState("");
 
   const {
     register,
@@ -83,7 +82,11 @@ export default function ForgotPasswordPage() {
               <Alert
                 className={status === "success" ? "bg-green-50" : "bg-red-50"}
               >
-                <AlertDescription>{message}</AlertDescription>
+                <AlertDescription>
+                  {status === "success"
+                    ? "If an account exists with this email, you will receive a password reset link shortly."
+                    : "An error occurred. Please try again."}
+                </AlertDescription>
               </Alert>
             )}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -98,7 +101,11 @@ export default function ForgotPasswordPage() {
                   <p className="text-sm text-red-500">{errors.email.message}</p>
                 )}
               </div>
-              <SubmitButton text="Send Reset Link"  loading={loading} className="w-full"/>
+              <SubmitButton
+                text="Send Reset Link"
+                loading={loading}
+                className="w-full"
+              />
             </form>
             <div className="mt-4 text-center text-sm">
               <Link href="/login" className="underline hover:text-primary">

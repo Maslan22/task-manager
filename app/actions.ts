@@ -14,6 +14,12 @@ import { toast } from "sonner";
 const resend = new Resend(process.env.RESEND_API_KEY);
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
+interface PrevState {
+  success?: boolean;
+  message?: string;
+  errors?: Record<string, string[]>;
+}
+
 export async function registerUser({
   email,
   password,
@@ -95,7 +101,7 @@ export async function registerUser({
   }
 }
 
-export async function CreateSiteAction(prevState: any, formData: FormData) {
+export async function CreateSiteAction(prevState: PrevState, formData: FormData) {
   const user = await requireUser();
 
   const submission = parseWithZod(formData, {
@@ -118,7 +124,7 @@ export async function CreateSiteAction(prevState: any, formData: FormData) {
   return redirect("/dashboard/tasks");
 }
 
-export async function CreatePostAction(prevState: any, formData: FormData) {
+export async function CreatePostAction(prevState: PrevState, formData: FormData) {
   const user = await requireUser();
 
   const submission = parseWithZod(formData, {
@@ -168,7 +174,7 @@ export async function UpdatePostStatus(formData: FormData) {
   return redirect(`/dashboard/tasks/${formData.get("taskId")}`);
 }
 
-export async function EditPostAction(prevState: any, formData: FormData) {
+export async function EditPostAction(prevState: PrevState, formData: FormData) {
   const user = await requireUser();
 
   const submission = parseWithZod(formData, {
@@ -199,7 +205,7 @@ export async function EditPostAction(prevState: any, formData: FormData) {
 export async function DeletePost(formData: FormData) {
   const user = await requireUser();
 
- await prisma.post.delete({
+  await prisma.post.delete({
     where: {
       userId: user.user.id,
       id: formData.get("articleId") as string,
@@ -294,14 +300,13 @@ export async function addAttendee(formData: FormData) {
     },
   });
 
-  return { success: true, taskId };
+  return { success: true };
 }
 
 export async function removeAttendee(formData: FormData) {
   const user = requireUser();
   if (!user) return redirect("/login");
 
-  const taskId = formData.get("taskId") as string;
   const attendeeId = formData.get("attendeeId") as string;
 
   await prisma.taskAttendee.delete({

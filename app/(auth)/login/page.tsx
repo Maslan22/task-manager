@@ -64,6 +64,7 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
+        setError("Invalid email or password"); // Set error message
         toast.error("Invalid email or password");
         return;
       }
@@ -71,6 +72,7 @@ export default function LoginPage() {
       router.push("/dashboard");
       router.refresh();
     } catch (error) {
+      setError("An error occurred during sign in"); // Set error message
       toast.error("An error occurred during sign in");
     } finally {
       setLoading(false);
@@ -145,7 +147,7 @@ export default function LoginPage() {
                   Forgot password?
                 </Link>
               </div>
-              <SubmitButton text="Sign in" loading={loading}  className="w-full"/>
+              <SubmitButton text="Sign in" loading={loading} className="w-full" />
             </form>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}

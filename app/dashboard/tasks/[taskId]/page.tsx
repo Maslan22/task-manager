@@ -19,7 +19,6 @@ import {
   Settings,
   GridIcon,
   ListIcon,
-  Search,
   Users,
 } from "lucide-react";
 import Link from "next/link";
