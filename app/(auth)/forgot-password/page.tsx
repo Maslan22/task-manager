@@ -26,7 +26,6 @@ type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 
 export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
 
   const {
     register,
@@ -55,10 +54,8 @@ export default function ForgotPasswordPage() {
       toast.success(
         "If an account exists with this email, you will receive a password reset link shortly."
       );
-      setStatus("success");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "An error occurred");
-      setStatus("error");
     } finally {
       setLoading(false);
     }
@@ -78,17 +75,7 @@ export default function ForgotPasswordPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {status !== "idle" && (
-              <Alert
-                className={status === "success" ? "bg-green-50" : "bg-red-50"}
-              >
-                <AlertDescription>
-                  {status === "success"
-                    ? "If an account exists with this email, you will receive a password reset link shortly."
-                    : "An error occurred. Please try again."}
-                </AlertDescription>
-              </Alert>
-            )}
+            
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -97,9 +84,7 @@ export default function ForgotPasswordPage() {
                   placeholder="name@example.com"
                   {...register("email")}
                 />
-                {errors.email && (
-                  <p className="text-sm text-red-500">{errors.email.message}</p>
-                )}
+               
               </div>
               <SubmitButton
                 text="Send Reset Link"

@@ -16,7 +16,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
 import { SubmitButton } from "@/app/components/SubmitButtons";
 import { toast } from "sonner";
@@ -38,7 +37,6 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const {
@@ -64,7 +62,6 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError("Invalid email or password"); // Set error message
         toast.error("Invalid email or password");
         return;
       }
@@ -77,7 +74,6 @@ export default function LoginPage() {
           ? error.message
           : "An error occurred during sign in";
 
-      setError(errorMessage);
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -97,20 +93,7 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {resetSuccess && (
-              <Alert className="mb-4 bg-green-50">
-                <AlertDescription>
-                  Password has been successfully reset. You can now log in with
-                  your new password.
-                </AlertDescription>
-              </Alert>
-            )}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              {error && (
-                <Alert className="bg-red-50">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input

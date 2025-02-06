@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { SubmitButton } from "@/app/components/SubmitButtons";
 
@@ -36,7 +35,6 @@ export default function ResetPasswordPage() {
   const token = searchParams.get("token");
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const {
     register,
@@ -48,12 +46,10 @@ export default function ResetPasswordPage() {
 
   const onSubmit = async (data: ResetPasswordFormValues) => {
     if (!token) {
-      setError("Invalid reset token");
       return;
     }
 
     setLoading(true);
-    setError("");
 
     try {
       const response = await fetch("/api/auth/reset-password", {
@@ -95,11 +91,6 @@ export default function ResetPasswordPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {error && (
-              <Alert className="mb-4 bg-red-50">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="password">New Password</Label>
@@ -121,13 +112,12 @@ export default function ResetPasswordPage() {
                   type="password"
                   {...register("confirmPassword")}
                 />
-                {errors.confirmPassword && (
-                  <p className="text-sm text-red-500">
-                    {errors.confirmPassword.message}
-                  </p>
-                )}
               </div>
-              <SubmitButton text="Reset Password" loading={loading}  className="w-full"/>
+              <SubmitButton
+                text="Reset Password"
+                loading={loading}
+                className="w-full"
+              />
             </form>
           </CardContent>
         </Card>
