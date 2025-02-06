@@ -1,0 +1,69 @@
+import { auth } from "@/app/utils/auth";
+import { redirect } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { UserSearch } from "@/app/components/dashboard/UserSearch";
+import prisma from "@/app/utils/db";
+import { AttendeeList } from "@/app/components/dashboard/AttendeeList";
+
+interface PageProps {
+  params: { taskId: string }
+}
+
+async function getTask(taskId: string) {
+  return await prisma.task.findUnique({
+    where: { id: taskId },
+    include: {
+      attendees: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              image: true
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+export default async function AttendeesPage({ params }: PageProps) {
+  const user = await auth();
+  if (!user) return redirect("/login");
+
+  const resolvedParams = await Promise.resolve(params);
+  
+  const task: any = await getTask(resolvedParams.taskId);
+  if (!task) return redirect("/dashboard/tasks");
+
+  return (
+    <div className="container max-w-3xl mx-auto px-4">
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <CardTitle>Manage Attendees</CardTitle>
+              <CardDescription>Add or remove attendees for {task.name}</CardDescription>
+            </div>
+            <Badge variant="secondary" className="w-fit">
+              {task.attendees.length} {task.attendees.length === 1 ? 'Attendee' : 'Attendees'}
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <UserSearch taskId={task.id} attendees={task.attendees} />
+          <AttendeeList attendees={task.attendees} taskId={task.id} />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

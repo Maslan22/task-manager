@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id                String         @id @default(uuid())
+  name              String?
+  email             String?        @unique
+  emailVerified     DateTime?
+  password          String
+  image             String?
+  role              UserRole       @default(USER)
+  verificationToken String?
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  tasks             Task[]
+  posts             Post[]
+  taskAttendees     TaskAttendee[] @relation("TaskAttendees")
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}
+
+model Task {
+  id           String         @id @default(uuid())
+  name         String
+  description  String
+  subdirectory String         @unique
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  imageUrl     String?
+  User         User?          @relation(fields: [userId], references: [id])
+  userId       String?
+  posts        Post[]
+  attendees    TaskAttendee[]
+}
+
+model TaskAttendee {
+  id        String   @id @default(uuid())
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId    String
+  user      User     @relation("TaskAttendees", fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  createdAt DateTime @default(now())
+
+  @@unique([taskId, userId])
+}
+
+enum PostStatus {
+  PENDING
+  UPCOMING
+  ONGOING
+  COMPLETED
+}
+
+model Post {
+  id               String     @id @default(uuid())
+  title            String
+  articleContent   Json
+  smallDescription String
+  image            String
+  slug             String     @unique
+  status           PostStatus @default(PENDING)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @default(now())
+  User             User?      @relation(fields: [userId], references: [id])
+  userId           String?
+  Task             Task?      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId           String?
+}
