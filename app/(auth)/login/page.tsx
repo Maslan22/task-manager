@@ -80,7 +80,7 @@ export default function LoginPage() {
     }
   };
 
-  const resetSuccess = searchParams.get("reset") === "success";
+  // const resetSuccess = searchParams.get("reset") === "success";
 
   return (
     <div className="container relative min-h-screen flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-1 lg:px-0">
