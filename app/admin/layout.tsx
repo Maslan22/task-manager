@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Users, BarChart3, Layout } from "lucide-react";
 import { auth } from "../utils/auth";
 import { ThemeToggle } from "../components/dashboard/ThemeToggle";
 import { UserDropdown } from "../components/dashboard/UserMenu";
