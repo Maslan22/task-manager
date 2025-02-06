@@ -93,7 +93,7 @@ export default function VerifyEmailPage() {
               <div className="space-y-4">
                 <p className="text-center text-red-500">{error}</p>
                 <p className="text-center">
-                  If you're having trouble, you can request a new verification
+                  If you are having trouble, you can request a new verification
                   email on the login page.
                 </p>
                 <Button asChild variant="outline" className="w-full">

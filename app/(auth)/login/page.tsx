@@ -71,7 +71,7 @@ export default function LoginPage() {
 
       router.push("/dashboard");
       router.refresh();
-    } catch (error) {
+    } catch (_) {
       setError("An error occurred during sign in"); // Set error message
       toast.error("An error occurred during sign in");
     } finally {
