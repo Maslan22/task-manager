@@ -1,11 +1,17 @@
 // app/api/auth/forgot-password/route.ts
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
+import nodemailer from 'nodemailer';
 import crypto from "crypto";
-// import { createResetToken } from "@/lib/tokens";
 import prisma from "@/app/utils/db";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD
+  }
+});
+
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 export async function POST(req: Request) {
@@ -44,12 +50,9 @@ export async function POST(req: Request) {
     // Create reset URL
     const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
 
-    // Send email
-    await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 
-        (process.env.NODE_ENV === "development" 
-          ? "test@resend.dev" 
-          : "noreply@yourdomain.com"),
+    // Send email using nodemailer
+    const mailOptions = {
+      from: process.env.GMAIL_USER,
       to: process.env.NODE_ENV === "development"
         ? process.env.DEVELOPMENT_EMAIL || "henrycoffie22@gmail.com"
         : email,
@@ -61,7 +64,9 @@ export async function POST(req: Request) {
         <p>This link will expire in 1 hour.</p>
         <p>If you didn't request this, please ignore this email.</p>
       `,
-    });
+    };
+
+    await transporter.sendMail(mailOptions);
 
     return NextResponse.json({
       success: true,

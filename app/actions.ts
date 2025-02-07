@@ -7,12 +7,18 @@ import { parseWithZod } from "@conform-to/zod";
 import { redirect } from "next/navigation";
 import { PostSchema, taskSchema } from "./utils/zodSchemas";
 
-import { Resend } from "resend";
+import nodemailer from 'nodemailer';
 import { generateToken } from "./utils/tokengen";
 import { toast } from "sonner";
 import { SubmissionResult } from "@conform-to/react";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD
+  }
+});
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 // interface PrevState {
@@ -60,11 +66,8 @@ export async function registerUser({
   const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`;
 
   try {
-    await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 
-        (process.env.NODE_ENV === "development" 
-          ? "test@resend.dev" 
-          : "noreply@yourdomain.com"),
+    await transporter.sendMail({
+      from: process.env.GMAIL_USER,
       to: process.env.NODE_ENV === "development"
         ? process.env.DEVELOPMENT_EMAIL || "henrycoffie22@gmail.com"
         : email,
@@ -83,7 +86,6 @@ export async function registerUser({
         process.env.NODE_ENV === "development"
           ? "Registration successful. Verification email sent to developer address."
           : "Registration successful. Please check your email to verify your account.",
-      // Include verification URL only in development
       ...(process.env.NODE_ENV === "development" && { verificationUrl }),
       email:
         process.env.NODE_ENV === "development"
