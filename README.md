@@ -17,6 +17,8 @@ Zod - Type Validation
 
 Conform - Form Handling
 
+Node Mailer - Email Verification
+
 Getting Started
 First, install pnpm (required for Next.js 15 compatibility):
 
