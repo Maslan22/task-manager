@@ -47,3 +47,8 @@ Real-time search and filtering
 Responsive design
 
 Collaborative task sharing
+
+
+For Amin user 
+Login: admin@taskmanager.com
+password: admin@Password.com
