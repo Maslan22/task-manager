@@ -14,10 +14,10 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-async function getData(subDir: string) {
-  // Decode the URL-encoded subdirectory
-  const decodedSubDir = decodeURIComponent(subDir);
+type PageParams = Promise<{ name: string }>;
 
+async function getData(subDir: string) {
+  const decodedSubDir = decodeURIComponent(subDir);
   console.log("Looking up subdirectory:", decodedSubDir);
 
   const data = await prisma.task.findUnique({
@@ -53,20 +53,23 @@ async function getData(subDir: string) {
 export default async function BlogIndexPage({
   params,
 }: {
-  params: { name: string };
+  params: PageParams;
 }) {
-  const resolvedParams = await Promise.resolve(params);
+  const resolvedParams = await params;
   const data = await getData(resolvedParams.name);
 
   return (
     <>
-      <div className="flex items-center gap-x-3 pt-10 pb-5">
-        <Button size="icon" variant="outline" asChild>
-          <Link href={`/dashboard/tasks`}>
-            <ArrowLeft className="size-4" />
-          </Link>
-        </Button>
-        <h1 className="text-xl font-medium">Go Back</h1>
+      <div className="flex items-center justify-between pt-10 pb-5">
+        <div className="flex items-center gap-x-3">
+          <Button size="sm" variant="outline" asChild>
+            <Link href={`/dashboard/tasks`}>
+              <ArrowLeft className="size-4" />
+            </Link>
+          </Button>
+          <h1 className="text-xl font-medium">Go Back</h1>
+        </div>
+        <ThemeToggle />
       </div>
 
       <nav className="grid grid-cols-3 my-10">
@@ -75,10 +78,6 @@ export default async function BlogIndexPage({
           <h1 className="text-3xl font-semibold tracking-tight px-2 whitespace-normal break-normal text-center leading-normal">
             {data.name}
           </h1>
-        </div>
-
-        <div className="col-span-1 flex w-full justify-end">
-          <ThemeToggle />
         </div>
       </nav>
 

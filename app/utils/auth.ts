@@ -1,11 +1,12 @@
-// app/utils/auth.ts
 import { DefaultSession } from "next-auth";
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import prisma from "./db";
+import { Adapter } from "next-auth/adapters";
 
+// Extend the Session type
 declare module "next-auth" {
   interface Session {
     user: {
@@ -14,6 +15,7 @@ declare module "next-auth" {
     } & DefaultSession["user"];
   }
 
+  // Extend the User type within next-auth
   interface User {
     role: "USER" | "ADMIN";
   }
@@ -33,7 +35,7 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma) as Adapter,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
@@ -52,7 +54,7 @@ export const {
 
         const user = await prisma.user.findUnique({
           where: {
-            email: credentials.email,
+            email: credentials.email as string,
           },
         });
 
@@ -61,7 +63,7 @@ export const {
         }
 
         const isPasswordValid = await bcrypt.compare(
-          credentials.password,
+          credentials.password as string,
           user.password
         );
 
@@ -71,7 +73,7 @@ export const {
 
         return {
           id: user.id,
-          email: user.email,
+          email: user.email  as string,
           name: user.name,
           image: user.image,
           role: user.role,

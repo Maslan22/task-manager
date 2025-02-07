@@ -46,11 +46,13 @@ export async function POST(req: Request) {
 
     // Send email
     await resend.emails.send({
-      from: "noreply@yourdomain.com",
-      to:
-        process.env.NODE_ENV === "development"
-          ? "henrycoffie22@gmail.com"
-          : email,
+      from: process.env.RESEND_FROM_EMAIL || 
+        (process.env.NODE_ENV === "development" 
+          ? "test@resend.dev" 
+          : "noreply@yourdomain.com"),
+      to: process.env.NODE_ENV === "development"
+        ? process.env.DEVELOPMENT_EMAIL || "henrycoffie22@gmail.com"
+        : email,
       subject: "Password Reset Request",
       html: `
         <p>Hello,</p>

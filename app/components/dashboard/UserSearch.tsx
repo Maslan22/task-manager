@@ -32,6 +32,12 @@ interface TaskAttendee {
   user: User;
 }
 
+type AddAttendeeResult = {
+  success?: boolean;
+  error?: string;
+  taskId?: string;
+};
+
 interface UserSearchProps {
   taskId: string;
   attendees: TaskAttendee[];
@@ -68,7 +74,7 @@ export function UserSearch({ taskId, attendees }: UserSearchProps) {
   const handleSubmit = async (formData: FormData) => {
     setLoading(true);
     try {
-      const result = await addAttendee(formData);
+      const result = await addAttendee(formData) as AddAttendeeResult;
   
       if (result?.error) {
         toast.error(result.error);
@@ -81,7 +87,7 @@ export function UserSearch({ taskId, attendees }: UserSearchProps) {
       setSearchTerm("");
       setUsers([]);
   
-      if (result?.success && result.taskId) {
+      if (result?.success && result?.taskId) {
         router.push(`/dashboard/tasks/${result.taskId}/attendees`);
       }
     } catch (error) {

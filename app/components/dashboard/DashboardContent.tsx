@@ -246,11 +246,11 @@ export function DashboardContent({ tasks, articles }: DashboardContentProps) {
       <h1 className="text-2xl mt-10 font-semibold mb-5">Recent Task</h1>
       {filteredArticles.length === 0 ? (
         <EmptyState
-          title="No articles found"
+          title="No tasks found"
           description={
             search
-              ? "No articles match your search criteria."
-              : "You currently don't have any articles created. Please create some so that you can see them right here"
+              ? "No tasks match your search criteria."
+              : "You currently don't have any tasks created. Please create some so that you can see them right here"
           }
           buttonText="Create Task"
           href="/dashboard/tasks"
@@ -275,7 +275,7 @@ export function DashboardContent({ tasks, articles }: DashboardContentProps) {
               <CardFooter>
                 <Button asChild className="w-full">
                   <Link href={renderArticleLink(item.taskId, item.id)}>
-                    Edit Article
+                    Edit Task
                   </Link>
                 </Button>
               </CardFooter>

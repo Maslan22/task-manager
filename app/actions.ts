@@ -10,15 +10,16 @@ import { PostSchema, taskSchema } from "./utils/zodSchemas";
 import { Resend } from "resend";
 import { generateToken } from "./utils/tokengen";
 import { toast } from "sonner";
+import { SubmissionResult } from "@conform-to/react";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
-interface PrevState {
-  success?: boolean;
-  message?: string;
-  errors?: Record<string, string[]>;
-}
+// interface PrevState {
+//   success?: boolean;
+//   message?: string;
+//   errors?: Record<string, string[]>;
+// }
 
 export async function registerUser({
   email,
@@ -60,11 +61,13 @@ export async function registerUser({
 
   try {
     await resend.emails.send({
-      from: "noreply@yourdomain.com",
-      to:
-        process.env.NODE_ENV === "development"
-          ? "henrycoffie22@gmail.com" // Your verified email
-          : email,
+      from: process.env.RESEND_FROM_EMAIL || 
+        (process.env.NODE_ENV === "development" 
+          ? "test@resend.dev" 
+          : "noreply@yourdomain.com"),
+      to: process.env.NODE_ENV === "development"
+        ? process.env.DEVELOPMENT_EMAIL || "henrycoffie22@gmail.com"
+        : email,
       subject: "Verify your email address",
       html: `
         <h1>Welcome to ${process.env.NEXT_PUBLIC_APP_NAME || "Our App"}!</h1>
@@ -101,7 +104,9 @@ export async function registerUser({
   }
 }
 
-export async function CreateSiteAction(prevState: PrevState, formData: FormData) {
+export async function CreateSiteAction(
+  formData: FormData
+): Promise<SubmissionResult<string[]>> {
   const user = await requireUser();
 
   const submission = parseWithZod(formData, {
@@ -109,22 +114,33 @@ export async function CreateSiteAction(prevState: PrevState, formData: FormData)
   });
 
   if (submission.status !== "success") {
-    return submission.reply();
+    return submission.reply({
+      formErrors: ["Please check the form for errors"]
+    });
   }
 
-  await prisma.task.create({
-    data: {
-      description: submission.value.description,
-      name: submission.value.name,
-      subdirectory: submission.value.subdirectory,
-      userId: user.user.id,
-    },
-  });
+  try {
+    await prisma.task.create({
+      data: {
+        description: submission.value.description,
+        name: submission.value.name,
+        subdirectory: submission.value.subdirectory,
+        userId: user.user.id,
+      },
+    });
 
-  return redirect("/dashboard/tasks");
+    return submission.reply();
+
+  } catch (err) {
+    return submission.reply({
+      formErrors: [err instanceof Error ? err.message : "Failed to create task"]
+    });
+  }
 }
 
-export async function CreatePostAction(prevState: PrevState, formData: FormData) {
+export async function CreatePostAction(
+  formData: FormData
+): Promise<SubmissionResult<string[]>> {
   const user = await requireUser();
 
   const submission = parseWithZod(formData, {
@@ -132,22 +148,70 @@ export async function CreatePostAction(prevState: PrevState, formData: FormData)
   });
 
   if (submission.status !== "success") {
-    return submission.reply();
+    return submission.reply({
+      formErrors: ["Please check the form for errors"]
+    });
   }
 
-  await prisma.post.create({
-    data: {
-      title: submission.value.title,
-      smallDescription: submission.value.smallDescription,
-      slug: submission.value.slug,
-      articleContent: JSON.parse(submission.value.articleContent),
-      image: submission.value.coverImage,
-      userId: user.user.id,
-      taskId: formData.get("taskId") as string,
-    },
+  try {
+    await prisma.post.create({
+      data: {
+        title: submission.value.title,
+        smallDescription: submission.value.smallDescription,
+        slug: submission.value.slug,
+        articleContent: JSON.parse(submission.value.articleContent),
+        image: submission.value.coverImage,
+        userId: user.user.id,
+        taskId: formData.get("taskId") as string,
+      },
+    });
+
+    return submission.reply();
+
+  } catch (err) {
+    return submission.reply({
+      formErrors: [err instanceof Error ? err.message : "Failed to create post"]
+    });
+  }
+}
+
+export async function EditPostActions(
+  formData: FormData
+): Promise<SubmissionResult<string[]>> {
+  const user = await requireUser();
+
+  const submission = parseWithZod(formData, {
+    schema: PostSchema,
   });
 
-  return redirect(`/dashboard/tasks/${formData.get("taskId")}`);
+  if (submission.status !== "success") {
+    return submission.reply({
+      formErrors: ["Please check the form for errors"]
+    });
+  }
+
+  try {
+    await prisma.post.update({
+      where: {
+        userId: user.user.id,
+        id: formData.get("articleId") as string,
+      },
+      data: {
+        title: submission.value.title,
+        smallDescription: submission.value.smallDescription,
+        slug: submission.value.slug,
+        articleContent: JSON.parse(submission.value.articleContent),
+        image: submission.value.coverImage,
+      },
+    });
+
+    return submission.reply();
+
+  } catch (err) {
+    return submission.reply({
+      formErrors: [err instanceof Error ? err.message : "Failed to update post"]
+    });
+  }
 }
 
 export async function UpdatePostStatus(formData: FormData) {
@@ -168,34 +232,6 @@ export async function UpdatePostStatus(formData: FormData) {
     },
     data: {
       status,
-    },
-  });
-
-  return redirect(`/dashboard/tasks/${formData.get("taskId")}`);
-}
-
-export async function EditPostAction(prevState: PrevState, formData: FormData) {
-  const user = await requireUser();
-
-  const submission = parseWithZod(formData, {
-    schema: PostSchema,
-  });
-
-  if (submission.status !== "success") {
-    return submission.reply();
-  }
-
-  await prisma.post.update({
-    where: {
-      userId: user.user.id,
-      id: formData.get("articleId") as string,
-    },
-    data: {
-      title: submission.value.title,
-      smallDescription: submission.value.smallDescription,
-      slug: submission.value.slug,
-      articleContent: JSON.parse(submission.value.articleContent),
-      image: submission.value.coverImage,
     },
   });
 

@@ -10,28 +10,28 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@radix-ui/react-dropdown-menu";
 import { Atom } from "lucide-react";
 import Image from "next/image";
+import { toast } from "sonner";
 import TailwindEditor from "../EditorWrapper";
 import { SubmitButton } from "../SubmitButtons";
-import { toast } from "sonner";
-import { useActionState, useState } from "react";
+import { useState } from "react";
 import { JSONContent } from "novel";
-// import { useFormState } from "react-dom";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import slugify from "react-slugify";
 import { PostSchema } from "@/app/utils/zodSchemas";
-import { EditPostAction } from "@/app/actions";
+import { EditPostActions } from "@/app/actions";
+import slugify from "react-slugify";
+import { useRouter } from "next/navigation";
 
 interface iAppProps {
   data: {
-    title: string;
     slug: string;
+    title: string;
     smallDescription: string;
-    articleContent: JSON;
+    articleContent: JSONContent;
     id: string;
     image: string;
   };
@@ -39,57 +39,65 @@ interface iAppProps {
 }
 
 export function EditArticleForm({ data, taskId }: iAppProps) {
-  const [imageUrl, setImageUrl] = useState<undefined | string>(data.image);
-  const [value, setValue] = useState<JSONContent | undefined>(
-    data.articleContent
-  );
-  const [slug, setSlugValue] = useState<undefined | string>(data.slug);
-  const [title, setTitle] = useState<undefined | string>(data.title);
-  const [lastResult, action] = useActionState(EditPostAction, undefined);
-  const [form, fields] = useForm({
-    lastResult,
+  const router = useRouter();
+  const [imageUrl, setImageUrl] = useState<string>(data.image);
+  const [value, setValue] = useState<JSONContent>(data.articleContent);
+  const [slug, setSlugValue] = useState<string>(data.slug);
+  const [title, setTitle] = useState<string>(data.title);
 
+  const [form, fields] = useForm({
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: PostSchema });
     },
-
     shouldValidate: "onBlur",
     shouldRevalidate: "onInput",
   });
 
-  function handleSlugGeneration() {
-    const titleInput = title;
+  const handleSubmit = async (formData: FormData) => {
+    const result = await EditPostActions(formData);
+    
+    if (result?.status === "success") {
+      toast.success("Post updated successfully!");
+      router.push(`/dashboard/tasks/${taskId}`);
+    } else if (result?.error) {
+      toast.error("Failed to update post");
+    }
+  };
 
-    if (titleInput?.length === 0 || titleInput === undefined) {
-      return toast.error("Please add a title first");
+  function handleSlugGeneration() {
+    if (!title || title.length === 0) {
+      return toast.error("Please create a title first");
     }
 
-    setSlugValue(slugify(titleInput));
-
-    return toast.success("Slug has been generated");
+    setSlugValue(slugify(title));
+    return toast.success("Slug has been created");
   }
+
   return (
     <Card className="mt-5">
       <CardHeader>
-        <CardTitle>Article Details</CardTitle>
-        <CardDescription>Lorem ipsum dolor sit.</CardDescription>
+        <CardTitle>Task Details</CardTitle>
+        <CardDescription>
+          Lipsum dolor sit amet, consectetur adipiscing elit
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form
           className="flex flex-col gap-6"
           id={form.id}
           onSubmit={form.onSubmit}
-          action={action}
+          action={handleSubmit}
         >
           <input type="hidden" name="articleId" value={data.id} />
           <input type="hidden" name="taskId" value={taskId} />
+          
           <div className="grid gap-2">
             <Label>Title</Label>
             <Input
               key={fields.title.key}
               name={fields.title.name}
               defaultValue={fields.title.initialValue}
-              placeholder="Article Title"
+              placeholder="Nextjs blogging application"
               onChange={(e) => setTitle(e.target.value)}
               value={title}
             />
@@ -102,14 +110,14 @@ export function EditArticleForm({ data, taskId }: iAppProps) {
               key={fields.slug.key}
               name={fields.slug.name}
               defaultValue={fields.slug.initialValue}
-              placeholder="Article Slug"
+              placeholder="Task Slug"
               onChange={(e) => setSlugValue(e.target.value)}
               value={slug}
             />
             <Button
               onClick={handleSlugGeneration}
               className="w-fit"
-              variant={"secondary"}
+              variant="secondary"
               type="button"
             >
               <Atom className="size-4 mr-2" /> Generate Slug
@@ -123,7 +131,7 @@ export function EditArticleForm({ data, taskId }: iAppProps) {
               key={fields.smallDescription.key}
               name={fields.smallDescription.name}
               defaultValue={data.smallDescription}
-              placeholder="Small Description for your blog article..."
+              placeholder="Small Description for your blog task..."
               className="h-32"
             />
             <p className="text-red-500 text-sm">
@@ -135,8 +143,8 @@ export function EditArticleForm({ data, taskId }: iAppProps) {
             <Label>Cover Image</Label>
             <input
               type="hidden"
-              key={fields.coverImage.key}
               name={fields.coverImage.name}
+              key={fields.coverImage.key}
               defaultValue={fields.coverImage.initialValue}
               value={imageUrl}
             />
@@ -152,15 +160,14 @@ export function EditArticleForm({ data, taskId }: iAppProps) {
               <UploadDropzone
                 onClientUploadComplete={(res) => {
                   setImageUrl(res[0].url);
-                  toast.success("Image uploaded successfully");
+                  toast.success("Image has been uploaded");
                 }}
-                endpoint={"imageUploader"}
+                endpoint="imageUploader"
                 onUploadError={() => {
-                  toast.error("Something went wrong, Failed to upload image");
+                  toast.error("Something went wrong...");
                 }}
               />
             )}
-
             <p className="text-red-500 text-sm">{fields.coverImage.errors}</p>
           </div>
 
@@ -168,8 +175,8 @@ export function EditArticleForm({ data, taskId }: iAppProps) {
             <Label>Task Content</Label>
             <input
               type="hidden"
-              key={fields.articleContent.key}
               name={fields.articleContent.name}
+              key={fields.articleContent.key}
               defaultValue={fields.articleContent.initialValue}
               value={JSON.stringify(value)}
             />

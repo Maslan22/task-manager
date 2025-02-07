@@ -53,19 +53,12 @@ async function getData(
   userId: string,
   taskId: string,
   page: number = 1,
-  search: string = "",
-  limit: number = 10
+  search: string = ""
 ) {
-  // Calculate skip value
-  const skipValue = (page - 1) * limit;
-
   const task = await prisma.task.findFirst({
     where: {
       id: taskId,
-      OR: [
-        { userId: userId }, // Task owner
-        { attendees: { some: { userId: userId } } }, // Attendee
-      ],
+      OR: [{ userId: userId }, { attendees: { some: { userId: userId } } }],
     },
     select: {
       subdirectory: true,
@@ -88,22 +81,13 @@ async function getData(
     },
   });
 
-  if (!task) {
-    throw new Error("Task not found or unauthorized");
-  }
-
-  const isOwner = task.userId === userId;
+  const isOwner = task?.userId === userId;
 
   const whereClause = {
     taskId: taskId,
     ...(search.trim() !== "" && {
       OR: [
-        {
-          title: {
-            contains: search.trim(),
-            mode: "insensitive" as const,
-          },
-        },
+        { title: { contains: search.trim(), mode: "insensitive" as const } },
         {
           smallDescription: {
             contains: search.trim(),
@@ -125,67 +109,42 @@ async function getData(
         id: true,
         status: true,
       },
-      orderBy: {
-        createdAt: "desc",
-      },
-      skip: skipValue,
-      take: limit,
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * 10,
+      take: 10,
     }),
-    prisma.post.count({
-      where: whereClause,
-    }),
+    prisma.post.count({ where: whereClause }),
   ]);
 
-  return {
-    data,
-    total,
-    task,
-    isOwner,
-  };
+  return { data, total, task, isOwner };
 }
 
 interface PageProps {
-  params: { taskId: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: Promise<{ taskId: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function TaskIdRoute({ params, searchParams }: PageProps) {
+export default async function TaskIdRoute({
+  params,
+  searchParams,
+}: PageProps) {
   const user = await requireUser();
-  async function getParams() {
-    const user = await requireUser();
-    const resolvedParams = await Promise.resolve(params);
-    const resolvedSearch = await Promise.resolve(searchParams);
+  if (!user) return redirect("/login");
 
-    const task = await prisma.task.findFirst({
-      where: {
-        id: resolvedParams.taskId,
-      },
-      select: {
-        userId: true,
-      },
-    });
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  
+  const page = parseInt(String(resolvedSearchParams?.page || "1"));
+  const search = String(resolvedSearchParams?.search || "");
+  const view = String(resolvedSearchParams?.view || "list") as "grid" | "list";
 
-    return {
-      taskId: resolvedParams.taskId,
-      page: parseInt(String(resolvedSearch?.page || "1")),
-      search: String(resolvedSearch?.search || ""),
-      view: String(resolvedSearch?.view || "list") as "grid" | "list",
-      isOwner: task?.userId === user.user.id,
-    };
-  }
+  const {
+    data,
+    total,
+    task: taskData,
+    isOwner,
+  } = await getData(user.user.id, resolvedParams.taskId, page, search);
 
-  const { taskId, page, search, view, isOwner } = await getParams();
-
-  if (!user) {
-    return redirect("/login");
-  }
-
-  const { data, total, task } = await getData(
-    user.user.id,
-    taskId,
-    page,
-    search
-  );
   const totalPages = Math.ceil(total / 10);
 
   // const getDisplayView = () => {
@@ -218,7 +177,7 @@ export default async function TaskIdRoute({ params, searchParams }: PageProps) {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link
-                    href={`/blog/${task?.subdirectory}`}
+                    href={`/blog/${taskData?.subdirectory}`}
                     className="flex items-center"
                   >
                     <Book className="h-4 w-4 mr-2" />
@@ -229,16 +188,16 @@ export default async function TaskIdRoute({ params, searchParams }: PageProps) {
                   <>
                     <DropdownMenuItem asChild>
                       <Link
-                        href={`/dashboard/tasks/${taskId}/attendees`}
+                        href={`/dashboard/tasks/${resolvedParams.taskId}/attendees`}
                         className="flex items-center"
                       >
                         <Users className="h-4 w-4 mr-2" />
-                        Attendees ({task?.attendees?.length ?? 0})
+                        Attendees ({taskData?.attendees?.length ?? 0})
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link
-                        href={`/dashboard/tasks/${taskId}/settings`}
+                        href={`/dashboard/tasks/${resolvedParams.taskId}/settings`}
                         className="flex items-center"
                       >
                         <Settings className="h-4 w-4 mr-2" />
@@ -247,7 +206,7 @@ export default async function TaskIdRoute({ params, searchParams }: PageProps) {
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link
-                        href={`/dashboard/tasks/${taskId}/create`}
+                        href={`/dashboard/tasks/${resolvedParams.taskId}/create`}
                         className="flex items-center"
                       >
                         <PlusCircle className="h-4 w-4 mr-2" />
@@ -288,7 +247,7 @@ export default async function TaskIdRoute({ params, searchParams }: PageProps) {
         {/* Desktop Action Buttons */}
         <div className="hidden sm:grid sm:grid-cols-2 md:flex md:flex-row gap-2">
           <Button className="w-full md:w-auto" asChild>
-            <Link href={`/blog/${task?.subdirectory}`}>
+            <Link href={`/blog/${taskData?.subdirectory}`}>
               <Book className="h-4 w-4 mr-2" />
               View Task
             </Link>
@@ -296,21 +255,21 @@ export default async function TaskIdRoute({ params, searchParams }: PageProps) {
           {isOwner && (
             <>
               <Button className="w-full md:w-auto" variant="secondary" asChild>
-                <Link href={`/dashboard/tasks/${taskId}/attendees`}>
+                <Link href={`/dashboard/tasks/${resolvedParams.taskId}/attendees`}>
                   <Users className="h-4 w-4 mr-2" />
                   <span className="whitespace-nowrap">
-                    Attendees ({task?.attendees?.length ?? 0})
+                    Attendees ({taskData?.attendees?.length ?? 0})
                   </span>
                 </Link>
               </Button>
               <Button className="w-full md:w-auto" variant="secondary" asChild>
-                <Link href={`/dashboard/tasks/${taskId}/settings`}>
+                <Link href={`/dashboard/tasks/${resolvedParams.taskId}/settings`}>
                   <Settings className="h-4 w-4 mr-2" />
                   Settings
                 </Link>
               </Button>
               <Button className="w-full md:w-auto" asChild>
-                <Link href={`/dashboard/tasks/${taskId}/create`}>
+                <Link href={`/dashboard/tasks/${resolvedParams.taskId}/create`}>
                   <PlusCircle className="h-4 w-4 mr-2" />
                   Create Task
                 </Link>
@@ -323,19 +282,27 @@ export default async function TaskIdRoute({ params, searchParams }: PageProps) {
       {/* Content Section */}
       <div className="w-full">
         {data.length === 0 ? (
-          <NoTasks search={search} isOwner={isOwner} taskId={taskId} />
+          <NoTasks search={search} isOwner={isOwner} taskId={resolvedParams.taskId} />
         ) : (
           <div className="space-y-6">
             {/* Mobile View - Always Grid */}
             <div className="block sm:hidden">
-              <TaskGrid data={data} isOwner={isOwner} taskId={taskId} />
+              <TaskGrid data={data} isOwner={isOwner} taskId={resolvedParams.taskId} />
             </div>
             {/* Desktop View - Respects User Choice */}
             <div className="hidden sm:block">
               {view === "list" ? (
-                <TaskList data={data} isOwner={isOwner} taskId={taskId} />
+                <TaskList
+                  data={data}
+                  isOwner={isOwner}
+                  taskId={resolvedParams.taskId}
+                />
               ) : (
-                <TaskGrid data={data} isOwner={isOwner} taskId={taskId} />
+                <TaskGrid
+                  data={data}
+                  isOwner={isOwner}
+                  taskId={resolvedParams.taskId}
+                />
               )}
             </div>
             {data.length > 0 && (

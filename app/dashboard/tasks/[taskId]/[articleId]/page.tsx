@@ -4,6 +4,12 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { JSONContent } from "novel";
+
+type PageParams = Promise<{
+  articleId: string;
+  taskId: string;
+}>;
 
 async function getData(postId: string) {
   const data = await prisma.post.findUnique({
@@ -24,27 +30,28 @@ async function getData(postId: string) {
     return notFound();
   }
 
-  return data;
+  return {
+    ...data,
+    articleContent: data.articleContent as JSONContent,
+  };
 }
 
-export default async function EditRoute({
-  params,
-}: {
-  params: { articleId: string; taskId: string };
-}) {
-  const data = await getData(params.articleId);
+export default async function EditRoute({ params }: { params: PageParams }) {
+  const resolvedParams = await params;
+  const data = await getData(resolvedParams.articleId);
+
   return (
     <div className="">
       <div className="flex items-center">
-        <Button size="icon" variant="outline" asChild className="mr-3">
-          <Link href={`/dashboard/tasks/${params.taskId}`}>
+        <Button size="sm" variant="outline" asChild className="mr-3">
+          <Link href={`/dashboard/tasks/${resolvedParams.taskId}`}>
             <ArrowLeft className="size-4" />
           </Link>
         </Button>
-        <h1 className="text-2xl font-semibold">Edit Article</h1>
+        <h1 className="text-2xl font-semibold">Edit Task</h1>
       </div>
 
-      <EditArticleForm data={data} taskId={params.taskId}/>
+      <EditArticleForm data={data} taskId={resolvedParams.taskId} />
     </div>
   );
 }

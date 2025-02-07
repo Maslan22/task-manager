@@ -1,4 +1,5 @@
 "use client";
+
 import { CreateSiteAction } from "@/app/actions";
 import { taskSchema } from "@/app/utils/zodSchemas";
 import {
@@ -14,42 +15,60 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { Label } from "@/components/ui/label";
-import { useActionState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { SubmitButton } from "@/app/components/dashboard/SubmitButtons";
 
 export default function NewTaskRoute() {
-  const [lastResult, action] = useActionState(CreateSiteAction, undefined);
+  const router = useRouter();
   const [form, fields] = useForm({
-    lastResult,
     onValidate({ formData }) {
-      return parseWithZod(formData, {
+      const result = parseWithZod(formData, {
         schema: taskSchema,
       });
+
+      if (result.status === "error") {
+        toast.error("Please check the form for errors");
+      }
+
+      return result;
     },
     shouldValidate: "onBlur",
     shouldRevalidate: "onInput",
   });
 
+  const handleSubmit = async (formData: FormData) => {
+    const result = await CreateSiteAction(formData);
+    
+    if (result?.status === "success") {
+      toast.success("Task created successfully!");
+      router.push("/dashboard/tasks");
+    } else if (result?.error) {
+      toast.error("Failed to create task");
+    }
+  };
+
   return (
     <div className="flex flex-col flex-1 items-center justify-center">
       <Card className="max-w-[450px]">
         <CardHeader>
-          <CardTitle>Create Task</CardTitle>
+          <CardTitle>Create Event</CardTitle>
           <CardDescription>
-            Create your task here. Once you finished, click the button
+            Create your Event here. Once you are finished, click the button
             below...
           </CardDescription>
         </CardHeader>
-        <form id={form.id} onSubmit={form.onSubmit} action={action}>
+        
+        <form id={form.id} onSubmit={form.onSubmit} action={handleSubmit}>
           <CardContent>
             <div className="flex flex-col gap-y-6">
               <div className="grid gap-2">
-                <Label>Task Name</Label>
+                <Label>Event Name</Label>
                 <Input
                   name={fields.name.name}
                   key={fields.name.key}
                   defaultValue={fields.name.initialValue}
-                  placeholder="Task Name"
+                  placeholder="Event Name"
                 />
                 <p className="text-red-500 text-sm">{fields.name.errors}</p>
               </div>
@@ -73,7 +92,7 @@ export default function NewTaskRoute() {
                   name={fields.description.name}
                   key={fields.description.key}
                   defaultValue={fields.description.initialValue}
-                  placeholder="Add a brief description of your task"
+                  placeholder="Add a brief description of your event"
                 />
                 <p className="text-red-500 text-sm">
                   {fields.description.errors}
@@ -81,6 +100,7 @@ export default function NewTaskRoute() {
               </div>
             </div>
           </CardContent>
+          
           <CardFooter>
             <SubmitButton text="Submit" />
           </CardFooter>
