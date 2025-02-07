@@ -49,6 +49,8 @@ Responsive design
 Collaborative task sharing
 
 
-For Amin user 
+For Amin user (uses same login page route as normal users):
+
 Login: admin@taskmanager.com
+
 password: admin@Password.com
