@@ -19,17 +19,42 @@ import { useState } from "react";
 import { toast } from "sonner";
 import SubmitButton from "@/app/components/SubmitButtons";
 
+// password validation schema
+const passwordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters long")
+  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+  .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+  .regex(/[0-9]/, "Password must contain at least one number")
+  .regex(
+    /[^A-Za-z0-9]/,
+    "Password must contain at least one special character"
+  );
+
 // Registration form schema
 const registerSchema = z
   .object({
-    firstName: z.string().min(1, "First name is required"),
-    lastName: z.string().min(1, "Last name is required"),
-    email: z.string().email("Please enter a valid email address"),
-    password: z.string().min(8, "Password must be at least 8 characters long"),
+    firstName: z
+      .string()
+      .min(1, "First name is required")
+      .regex(
+        /^[a-zA-Z\s-]+$/,
+        "First name can only contain letters, spaces, and hyphens"
+      ),
+    lastName: z
+      .string()
+      .min(1, "Last name is required")
+      .regex(
+        /^[a-zA-Z\s-]+$/,
+        "Last name can only contain letters, spaces, and hyphens"
+      ),
+    email: z
+      .string()
+      .min(1, "Email is required")
+      .email("Please enter a valid email address")
+      .toLowerCase(),
+    password: passwordSchema,
     confirmPassword: z.string(),
-    // terms: z.literal(true, {
-    //   errorMap: () => ({ message: "You must accept the terms and conditions" }),
-    // }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -49,6 +74,7 @@ export default function RegisterPage() {
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
+    mode: "onChange", // Enable real-time validation
   });
 
   const onSubmit = async (data: RegisterFormValues) => {
@@ -101,7 +127,7 @@ export default function RegisterPage() {
                   <Label htmlFor="firstName">First name</Label>
                   <Input
                     id="firstName"
-                    placeholder="John"
+                    // placeholder="Maslan"
                     {...register("firstName")}
                   />
                   {errors.firstName && (
@@ -114,7 +140,7 @@ export default function RegisterPage() {
                   <Label htmlFor="lastName">Last name</Label>
                   <Input
                     id="lastName"
-                    placeholder="Doe"
+                    // placeholder="Doe"
                     {...register("lastName")}
                   />
                   {errors.lastName && (
@@ -162,26 +188,12 @@ export default function RegisterPage() {
                   </p>
                 )}
               </div>
-              {/* <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="terms"
-                  {...register("terms")}
-                />
-                <Label
-                  htmlFor="terms"
-                  className="text-sm font-medium leading-none"
-                >
-                  I agree to the{" "}
-                  <Link href="/terms" className="underline hover:text-primary">
-                    terms and conditions
-                  </Link>
-                </Label>
-              </div>
-              {errors.terms && (
-                <p className="text-sm text-red-500">{errors.terms.message}</p>
-              )} */}
 
-              <SubmitButton text="Create account" loading={loading} className="w-full"/>
+              <SubmitButton
+                text="Create account"
+                loading={loading}
+                className="w-full"
+              />
             </form>
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}

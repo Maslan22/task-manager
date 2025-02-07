@@ -2,8 +2,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 // import HeroImage from "@/public/hero.png";
 import { ThemeToggle } from "../components/dashboard/ThemeToggle";
+import { auth } from "../utils/auth";
 
-export function Hero() {
+export async function Hero() {
+  const user = await auth();
   return (
     <>
       <div className="relative flex flex-col w-full py-5 mx-auto md:flex-row md:items-center md:justify-between">
@@ -22,14 +24,25 @@ export function Hero() {
 
         <nav className="hidden md:flex md:justify-end md:space-x-4">
           <ThemeToggle />
-          <Link href={"/login"}>
-            <Button  variant="secondary">
-              Sign in
-            </Button>
-          </Link>
-          <Link href={"/logout"}>
-            <Button>Sign up</Button>
-          </Link>
+          {!user?.user.id ? (
+            <div className="flex items-center gap-4">
+              <Link href="/login">
+                <Button variant="secondary">Sign in</Button>
+              </Link>
+              <Link href="/register">
+                <Button>Sign up</Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="flex items-center gap-4">
+              <Link href="/logout">
+              <Button variant="secondary">Sign out</Button>
+            </Link>
+              <Link href="/dashboard">
+              <Button >View Dashboard</Button>
+            </Link>
+            </div>
+          )}
         </nav>
       </div>
 
@@ -51,9 +64,7 @@ export function Hero() {
             </p>
             <div className="flex items-center gap-x-5 w-full justify-center mt-5 ">
               <Link href={"/login"}>
-                <Button  variant="secondary">
-                  Sign in
-                </Button>
+                <Button variant="secondary">Sign in</Button>
               </Link>
               <Link href={"/register"}>
                 <Button>Try for free</Button>
