@@ -48,7 +48,6 @@ Real-time search and filtering
 
 Responsive design
 
-Collaborative task sharing
 
 
 For Amin user (uses same login page route as normal users):
