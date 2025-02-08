@@ -136,4 +136,5 @@ The analytics section offers detailed insights into platform usage, including ta
 Make sure you have pnpm installed (required for Next.js 15 compatibility):
 ```bash
 npm install -g pnpm
+pnp install
 pnp run dev
