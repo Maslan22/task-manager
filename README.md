@@ -9,7 +9,7 @@ Visit the live demo: [Task Manager](https://task-manager-snowy-pi.vercel.app/)
 
 ### Homepage
 #### Dark Mode
-![Task Manager Homepage Dark](./public/app/home-black.png)
+![Task Manager Homepage Dark](./public/app/dash-blak.png)
 #### Light Mode
 ![Task Manager Homepage Light](./public/app/home-white.png)
 The homepage provides a clean, modern interface introducing users to the task management platform. It features a responsive navigation bar, hero section explaining key features, and quick access to login/register options.
@@ -27,7 +27,7 @@ After registration, users receive a verification email to confirm their account,
 
 ### Dashboard
 #### Dark Mode
-![Dashboard Dark](./public/app/dash-blak.png)
+![Dashboard Dark](./public/app/home-black.png)
 #### Light Mode
 ![Dashboard Light](./public/app/dash-white.png)
 The dashboard provides an overview of all tasks and events. It features a responsive sidebar for navigation and quick access to different sections.
