@@ -1,121 +1,114 @@
-Task Manager
+# Task Manager
 
 A modern task management application built with Next.js 15, featuring user authentication, role-based access control, and real-time task management capabilities.
 
-🚀 Demo
-Visit the live demo: Task Manager
+## 🚀 Demo
+Visit the live demo: [Task Manager](https://task-manager-snowy-pi.vercel.app/)
 
+## 📸 How The App Works
 
-✨ Features:
+### Homepage
+#### Dark Mode
+![Task Manager Homepage Dark](./public/app/home-black.png)
+#### Light Mode
+![Task Manager Homepage Light](./public/app/home-white.png)
+The homepage provides a clean, modern interface introducing users to the task management platform. It features a responsive navigation bar, hero section explaining key features, and quick access to login/register options.
 
+### Authentication Flow
+#### Login/Register Page
+![Login Page](./public/app/login.png)
+![Sign Up Page](./public/app/sign-up.png)
+Users can either login with existing credentials or create a new account. The registration process includes email verification for security.
 
-Authentication
+#### Email Verification
+![Email Verification](./public/app/email.png)
+![Email Verification](./public/app/verified.png)
+After registration, users receive a verification email to confirm their account, ensuring security and preventing spam accounts.
 
-User authentication with email verification
+### Dashboard
+#### Dark Mode
+![Dashboard Dark](./public/app/dash-blak.png)
+#### Light Mode
+![Dashboard Light](./public/app/dash-white.png)
+The dashboard provides an overview of all tasks and events. It features a responsive sidebar for navigation and quick access to different sections.
 
-Password reset functionality
+### Event Management
+#### Creating Events
+![Create Event Form](./public/app/create-event.png)
+Users can create new events by filling out details such as:
+- Event title
+- Description
+- Date and time
+- Location
+- Attendees
 
-Role-based access control (Admin/User)
+#### Event View
+![Event Created](./public/app/created-event.png)
+Once created, events display all relevant information and allow for easy editing and management.
 
+### Task Management
+#### Creating Tasks
+![Create Task](./public/app/create-task.png)
+![Task Fields](./public/app/create-task1.png)
+The task creation interface allows users to:
+- Set task title
+- Add description
+- Add related files
 
-Task Management
+#### Completed Tasks
+![Task Completed](./public/app/task-created.png)
+Completed tasks are marked and can be filtered for easy tracking of progress.
 
-Create, read, update, and delete tasks
+### Attendee Management
+#### Adding Attendees
+![Search Attendees](./public/app/attendees-search.png)
+Users can search and add attendees to events with an intuitive interface.
 
-Real-time search and filtering
+#### Attendee List
+![Attendee List](./public/app/added-attendees.png)
+View and manage all attendees for each event, with options to remove or add more participants.
 
-Task organization and categorization
+### Task Details
+#### Task View
+![Task View](./public/app/view-ask.png)
+Detailed task view showing all task information, progress, and related activities.
 
-User Interface
+#### Full Task Details
+![Full Task Details](./public/app/task-veiw-full.png)
+Comprehensive view of task details including comments, attachments, and history.
 
-Responsive design for all devices
+## ✨ Features
 
-Modern and clean UI with shadcn/ui components
+### Authentication
+- User authentication with email verification
+- Password reset functionality
+- Role-based access control (Admin/User)
 
-Dark mode support
+### Task Management
+- Create, read, update, and delete tasks
+- Real-time search and filtering
+- Task organization and categorization
 
+### User Interface
+- Responsive design for all devices
+- Modern and clean UI with shadcn/ui components
+- Dark mode support
 
+## 🛠️ Tech Stack
 
-🛠️ Tech Stack:
+- [Next.js 15](https://nextjs.org/) - React Framework
+- [Auth.js](https://authjs.dev/) - Authentication
+- [Prisma](https://www.prisma.io/) - ORM
+- [Neon DB](https://neon.tech/) - PostgreSQL Database
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [shadcn/ui](https://ui.shadcn.com/) - UI Components
+- [Zod](https://zod.dev/) - Type Validation
+- [Conform](https://conform.guide/) - Form Handling
+- [Node Mailer](https://nodemailer.com/) - Email Verification
 
+## 🚦 Getting Started
 
-Next.js 15 - React Framework
-
-Auth.js - Authentication
-
-Prisma - ORM
-
-Neon DB - PostgreSQL Database
-
-Tailwind CSS - Styling
-
-shadcn/ui - UI Components
-
-Zod - Type Validation
-
-Conform - Form Handling
-
-Node Mailer - Email Verification
-
-
-🚦 Getting Started
-
-
-
-Prerequisites
-
+### Prerequisites
 Make sure you have pnpm installed (required for Next.js 15 compatibility):
-
+```bash
 npm install -g pnpm
-
-Installation
-
-Clone the repository:
-
-bashCopygit clone https://github.com/Maslan22/task-manager.git
-
-cd task-manager
-
-Install dependencies:
-
-pnpm install
-
-Run the development server:
-
-pnpm dev
-
-Open http://localhost:3000 with your browser to see the result.
-
-
-👩‍💻 Development
-
-You can start editing the page by modifying app/page.tsx. The page auto-updates as you edit the file.
-
-This project uses next/font to automatically optimize and load Geist, a custom font for Vercel.
-
-
-🔑 Admin Access
-
-To access the admin dashboard (uses same login page route as normal users):
-
-Email: admin@taskmanager.com
-
-Password: admin@Password.com
-
-
-📝 Environment Variables
-
-Create a .env file in the root directory with the following variables:
-
-DATABASE_URL=your_database_url
-
-NEXTAUTH_SECRET=your_nextauth_secret
-
-NEXTAUTH_URL=http://localhost:3000
-
-
-Vercel for hosting
-
-shadcn/ui for beautiful UI components
-
-Next.js team for the amazing framework
