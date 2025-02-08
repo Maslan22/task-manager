@@ -68,6 +68,18 @@ Users can search and add attendees to events with an intuitive interface.
 ![Attendee List](./public/app/added-attendees.png)
 View and manage all attendees for each event, with options to remove or add more participants.
 
+### Platform Settings
+#### Settings Configuration
+![Settings](./public/app/settings.png)
+The settings panel allows users to customize their event presentations and manage their content. Users can enhance their events by adding custom images and have full control over event management, including the ability to delete events when needed.
+
+#### Image Management
+![Before Adding an image(Initial save)](./public/app/set-before.png)
+Events initially display with a default placeholder image, ensuring a consistent look across the platform before customization.
+
+![After Adding an image (Adding image in settings)](./public/app/set-after.png)
+Users can personalize their events by uploading custom images through the settings interface, replacing the default placeholder with images that better represent their events.
+
 ### Task Details
 #### Task View
 ![Task View](./public/app/view-ask.png)
@@ -76,6 +88,18 @@ Detailed task view showing all task information, progress, and related activitie
 #### Full Task Details
 ![Full Task Details](./public/app/task-veiw-full.png)
 Comprehensive view of task details including comments, attachments, and history.
+
+### Admin Dashboard
+#### Admin Overview
+![Admin Overview](./public/app/admin.png)
+The admin dashboard provides a comprehensive overview of all system activities, including task management, user statistics, and platform analytics. Administrators can monitor and manage the entire platform from this centralized interface.
+
+![Admin Overview](./public/app/admin-users.png)
+Administrators have access to a complete user management system where they can view, manage, and monitor all user accounts. This includes the ability to view user roles, activity status, and account details.
+
+![Admin Overview](./public/app/admin-analytics.png)
+The analytics section offers detailed insights into platform usage, including task completion rates, user engagement metrics, and system performance statistics. This helps administrators make data-driven decisions for platform improvement.
+
 
 ## ✨ Features
 
@@ -112,3 +136,4 @@ Comprehensive view of task details including comments, attachments, and history.
 Make sure you have pnpm installed (required for Next.js 15 compatibility):
 ```bash
 npm install -g pnpm
+pnp run dev
