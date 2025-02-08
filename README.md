@@ -92,13 +92,13 @@ Comprehensive view of task details including comments, attachments, and history.
 ### Admin Dashboard
 #### Admin Overview
 ![Admin Overview](./public/app/admin.png)
-The admin dashboard provides a comprehensive overview of all system activities, including task management, user statistics, and platform analytics. Administrators can monitor and manage the entire platform from this centralized interface.
+The admin dashboard provides a comprehensive overview of all system activities, user statistics, and platform analytics. Administrators can monitor the entire platform from this centralized interface.
 
 ![Admin Overview](./public/app/admin-users.png)
-Administrators have access to a complete user management system where they can view, manage, and monitor all user accounts. This includes the ability to view user roles, activity status, and account details.
+Administrator have access to a complete user management system where they can view,and monitor all user accounts. This includes the ability to view user activity, status, and account details.
 
 ![Admin Overview](./public/app/admin-analytics.png)
-The analytics section offers detailed insights into platform usage, including task completion rates, user engagement metrics, and system performance statistics. This helps administrators make data-driven decisions for platform improvement.
+The analytics section offers detailed insights into platform usage, including task completion rates, user engagement metrics, and system performance statistics.
 
 
 ## ✨ Features
